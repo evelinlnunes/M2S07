@@ -16,12 +16,10 @@ import java.util.stream.Collectors;
 public class PacienteService {
 
     private final PacienteRepository pacienteRepository;
-    private final EnderecoService enderecoService;
 
     @Autowired
-    public PacienteService(PacienteRepository pacienteRepository, EnderecoService enderecoService) {
+    public PacienteService(PacienteRepository pacienteRepository) {
         this.pacienteRepository = pacienteRepository;
-        this.enderecoService = enderecoService;
     }
 
     public List<PacienteResponseDTO> listarPacientes() {
@@ -31,7 +29,7 @@ public class PacienteService {
                 .collect(Collectors.toList());
     }
 
-    public Paciente buscarPacientePorId(Long id) {
+    public PacienteResponseDTO buscarPacientePorId(Long id) {
         Optional<Paciente> optionalPaciente = pacienteRepository.findById(id);
         return optionalPaciente.map(this::converterParaDTO).orElse(null);
     }
@@ -39,12 +37,6 @@ public class PacienteService {
     public PacienteResponseDTO criarPaciente(PacienteRequestDTO pacienteRequestDTO) {
         Paciente paciente = new Paciente();
         BeanUtils.copyProperties(pacienteRequestDTO, paciente);
-
-        // Converte o ID do endereço para um objeto Endereco e associa ao paciente
-        Long enderecoId = pacienteRequestDTO.getEnderecoId();
-        if (enderecoId != null) {
-            paciente.setEndereco(enderecoService.buscarEnderecoPorId(enderecoId));
-        }
 
         Paciente pacienteSalvo = pacienteRepository.save(paciente);
         return converterParaDTO(pacienteSalvo);
@@ -55,12 +47,6 @@ public class PacienteService {
         if (optionalPaciente.isPresent()) {
             Paciente paciente = optionalPaciente.get();
             BeanUtils.copyProperties(pacienteRequestDTO, paciente);
-
-            // Converte o ID do endereço para um objeto Endereco e associa ao paciente
-            Long enderecoId = pacienteRequestDTO.getEnderecoId();
-            if (enderecoId != null) {
-                paciente.setEndereco(enderecoService.buscarEnderecoPorId(enderecoId));
-            }
 
             Paciente pacienteAtualizado = pacienteRepository.save(paciente);
             return converterParaDTO(pacienteAtualizado);
@@ -77,13 +63,9 @@ public class PacienteService {
         return false;
     }
 
-    public PacienteResponseDTO converterParaDTO(Paciente paciente) {
+    private PacienteResponseDTO converterParaDTO(Paciente paciente) {
         PacienteResponseDTO pacienteResponseDTO = new PacienteResponseDTO();
         BeanUtils.copyProperties(paciente, pacienteResponseDTO);
-
-        // Converte o Endereco da entidade para o DTO
-        pacienteResponseDTO.setEndereco(enderecoService.converterParaDTO(paciente.getEndereco()));
-
         return pacienteResponseDTO;
     }
 }

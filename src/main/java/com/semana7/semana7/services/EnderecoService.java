@@ -8,7 +8,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class EnderecoService {
@@ -20,9 +21,17 @@ public class EnderecoService {
         this.enderecoRepository = enderecoRepository;
     }
 
-    public Endereco buscarEnderecoPorId(Long id) {
-        Optional<Endereco> optionalEndereco = enderecoRepository.findById(id);
-        return optionalEndereco.map(this::converterParaDTO).orElse(null);
+    public List<EnderecoResponseDTO> listarEnderecos() {
+        List<Endereco> enderecos = enderecoRepository.findAll();
+        return enderecos.stream()
+                .map(this::converterParaDTO)
+                .collect(Collectors.toList());
+    }
+
+    public EnderecoResponseDTO buscarEnderecoPorId(Long id) {
+        return enderecoRepository.findById(id)
+                .map(this::converterParaDTO)
+                .orElse(null);
     }
 
     public EnderecoResponseDTO criarEndereco(EnderecoRequestDTO enderecoRequestDTO) {
@@ -33,26 +42,25 @@ public class EnderecoService {
     }
 
     public EnderecoResponseDTO atualizarEndereco(Long id, EnderecoRequestDTO enderecoRequestDTO) {
-        Optional<Endereco> optionalEndereco = enderecoRepository.findById(id);
-        if (optionalEndereco.isPresent()) {
-            Endereco endereco = optionalEndereco.get();
-            BeanUtils.copyProperties(enderecoRequestDTO, endereco);
-            Endereco enderecoAtualizado = enderecoRepository.save(endereco);
-            return converterParaDTO(enderecoAtualizado);
-        }
-        return null;
+        return enderecoRepository.findById(id)
+                .map(endereco -> {
+                    BeanUtils.copyProperties(enderecoRequestDTO, endereco);
+                    Endereco enderecoAtualizado = enderecoRepository.save(endereco);
+                    return converterParaDTO(enderecoAtualizado);
+                })
+                .orElse(null);
     }
 
     public boolean deletarEndereco(Long id) {
-        Optional<Endereco> optionalEndereco = enderecoRepository.findById(id);
-        if (optionalEndereco.isPresent()) {
-            enderecoRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        return enderecoRepository.findById(id)
+                .map(endereco -> {
+                    enderecoRepository.deleteById(id);
+                    return true;
+                })
+                .orElse(false);
     }
 
-    public EnderecoResponseDTO converterParaDTO(Endereco endereco) {
+    private EnderecoResponseDTO converterParaDTO(Endereco endereco) {
         EnderecoResponseDTO enderecoResponseDTO = new EnderecoResponseDTO();
         BeanUtils.copyProperties(endereco, enderecoResponseDTO);
         return enderecoResponseDTO;
