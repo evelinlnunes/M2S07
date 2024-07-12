@@ -3,11 +3,14 @@ package com.semana7.semana7.services;
 import com.semana7.semana7.dto.ConsultaRequestDTO;
 import com.semana7.semana7.dto.ConsultaResponseDTO;
 import com.semana7.semana7.entidades.Consulta;
+import com.semana7.semana7.entidades.Nutricionista;
+import com.semana7.semana7.entidades.Paciente;
 import com.semana7.semana7.repositorios.ConsultaRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,17 +45,13 @@ public class ConsultaService {
         Consulta consulta = new Consulta();
         BeanUtils.copyProperties(consultaRequestDTO, consulta);
 
-        // Busca o nutricionista pelo ID fornecido no DTO
-        Long nutricionistaId = consultaRequestDTO.getNutricionistaId();
-        if (nutricionistaId != null) {
-            consulta.setNutricionista(nutricionistaService.buscarNutricionistaPorId(nutricionistaId));
-        }
+        // Busca o nutricionista pelo ID e associa à consulta
+        Nutricionista nutricionista = nutricionistaService.buscarNutricionistaPorId(consultaRequestDTO.getNutricionistaId());
+        consulta.setNutricionista(nutricionista);
 
-        // Busca o paciente pelo ID fornecido no DTO
-        Long pacienteId = consultaRequestDTO.getPacienteId();
-        if (pacienteId != null) {
-            consulta.setPaciente(pacienteService.buscarPacientePorId(pacienteId));
-        }
+        // Busca o paciente pelo ID e associa à consulta
+        Paciente paciente = pacienteService.buscarPacientePorId(consultaRequestDTO.getPacienteId());
+        consulta.setPaciente(paciente);
 
         Consulta consultaSalva = consultaRepository.save(consulta);
         return converterParaDTO(consultaSalva);
@@ -64,17 +63,13 @@ public class ConsultaService {
             Consulta consulta = optionalConsulta.get();
             BeanUtils.copyProperties(consultaRequestDTO, consulta);
 
-            // Atualiza o nutricionista se o ID for fornecido no DTO
-            Long nutricionistaId = consultaRequestDTO.getNutricionistaId();
-            if (nutricionistaId != null) {
-                consulta.setNutricionista(nutricionistaService.buscarNutricionistaPorId(nutricionistaId));
-            }
+            // Busca o nutricionista pelo ID e associa à consulta
+            Nutricionista nutricionista = nutricionistaService.buscarNutricionistaPorId(consultaRequestDTO.getNutricionistaId());
+            consulta.setNutricionista(nutricionista);
 
-            // Atualiza o paciente se o ID for fornecido no DTO
-            Long pacienteId = consultaRequestDTO.getPacienteId();
-            if (pacienteId != null) {
-                consulta.setPaciente(pacienteService.buscarPacientePorId(pacienteId));
-            }
+            // Busca o paciente pelo ID e associa à consulta
+            Paciente paciente = pacienteService.buscarPacientePorId(consultaRequestDTO.getPacienteId());
+            consulta.setPaciente(paciente);
 
             Consulta consultaAtualizada = consultaRepository.save(consulta);
             return converterParaDTO(consultaAtualizada);
@@ -91,11 +86,33 @@ public class ConsultaService {
         return false;
     }
 
+    public List<ConsultaResponseDTO> listarConsultasComInformacoes() {
+        List<Consulta> consultas = consultaRepository.findAll();
+        return consultas.stream()
+                .map(this::converterParaDTOComInformacoes)
+                .collect(Collectors.toList());
+    }
+
     private ConsultaResponseDTO converterParaDTO(Consulta consulta) {
         ConsultaResponseDTO consultaResponseDTO = new ConsultaResponseDTO();
         BeanUtils.copyProperties(consulta, consultaResponseDTO);
-        consultaResponseDTO.setPaciente(pacienteService.converterParaDTO(consulta.getPaciente()));
-        consultaResponseDTO.setNutricionista(nutricionistaService.converterParaDTO(consulta.getNutricionista()));
+        return consultaResponseDTO;
+    }
+
+    private ConsultaResponseDTO converterParaDTOComInformacoes(Consulta consulta) {
+        ConsultaResponseDTO consultaResponseDTO = new ConsultaResponseDTO();
+        consultaResponseDTO.setDataHora(consulta.getDataHora());
+
+        // Verifica se o nutricionista não é nulo antes de acessar o nome
+        if (consulta.getNutricionista() != null) {
+            consultaResponseDTO.setNomeNutricionista(consulta.getNutricionista().getNome());
+        }
+
+        // Verifica se o paciente não é nulo antes de acessar o nome
+        if (consulta.getPaciente() != null) {
+            consultaResponseDTO.setNomePaciente(consulta.getPaciente().getNome());
+        }
+
         return consultaResponseDTO;
     }
 }

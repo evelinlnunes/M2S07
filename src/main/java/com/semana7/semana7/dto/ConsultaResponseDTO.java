@@ -1,52 +1,34 @@
 package com.semana7.semana7.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ConsultaResponseDTO {
-    private Long id;
-    private NutricionistaResponseDTO nutricionista;
-    private PacienteResponseDTO paciente;
-    private LocalDate dataDaConsulta;
-    private String observacoes;
+    private LocalDateTime dataHora;
+    private String nomeNutricionista;
+    private String nomePaciente;
 
     // Getters e Setters
-    public Long getId() {
-        return id;
+    public LocalDateTime getDataHora() {
+        return dataHora;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
     }
 
-    public NutricionistaResponseDTO getNutricionista() {
-        return nutricionista;
+    public String getNomeNutricionista() {
+        return nomeNutricionista;
     }
 
-    public void setNutricionista(NutricionistaResponseDTO nutricionista) {
-        this.nutricionista = nutricionista;
+    public void setNomeNutricionista(String nomeNutricionista) {
+        this.nomeNutricionista = nomeNutricionista;
     }
 
-    public PacienteResponseDTO getPaciente() {
-        return paciente;
+    public String getNomePaciente() {
+        return nomePaciente;
     }
 
-    public void setPaciente(PacienteResponseDTO paciente) {
-        this.paciente = paciente;
-    }
-
-    public LocalDate getDataDaConsulta() {
-        return dataDaConsulta;
-    }
-
-    public void setDataDaConsulta(LocalDate dataDaConsulta) {
-        this.dataDaConsulta = dataDaConsulta;
-    }
-
-    public String getObservacoes() {
-        return observacoes;
-    }
-
-    public void setObservacoes(String observacoes) {
-        this.observacoes = observacoes;
+    public void setNomePaciente(String nomePaciente) {
+        this.nomePaciente = nomePaciente;
     }
 }

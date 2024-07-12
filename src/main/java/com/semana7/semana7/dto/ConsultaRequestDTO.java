@@ -1,14 +1,21 @@
 package com.semana7.semana7.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class ConsultaRequestDTO {
+    private LocalDateTime dataHora;
     private Long nutricionistaId;
     private Long pacienteId;
-    private LocalDate dataDaConsulta;
-    private String observacoes;
 
     // Getters e Setters
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
+
     public Long getNutricionistaId() {
         return nutricionistaId;
     }
@@ -24,20 +31,5 @@ public class ConsultaRequestDTO {
     public void setPacienteId(Long pacienteId) {
         this.pacienteId = pacienteId;
     }
-
-    public LocalDate getDataDaConsulta() {
-        return dataDaConsulta;
-    }
-
-    public void setDataDaConsulta(LocalDate dataDaConsulta) {
-        this.dataDaConsulta = dataDaConsulta;
-    }
-
-    public String getObservacoes() {
-        return observacoes;
-    }
-
-    public void setObservacoes(String observacoes) {
-        this.observacoes = observacoes;
-    }
 }
+

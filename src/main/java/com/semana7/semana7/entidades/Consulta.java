@@ -1,15 +1,15 @@
 package com.semana7.semana7.entidades;
 
-
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 public class Consulta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private LocalDateTime dataHora;
 
     @ManyToOne
     @JoinColumn(name = "nutricionista_id")
@@ -19,9 +19,6 @@ public class Consulta {
     @JoinColumn(name = "paciente_id")
     private Paciente paciente;
 
-    private LocalDate dataDaConsulta;
-    private String observacoes;
-
     // Getters e Setters
     public Long getId() {
         return id;
@@ -29,6 +26,14 @@ public class Consulta {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
     }
 
     public Nutricionista getNutricionista() {
@@ -45,21 +50,5 @@ public class Consulta {
 
     public void setPaciente(Paciente paciente) {
         this.paciente = paciente;
-    }
-
-    public LocalDate getDataDaConsulta() {
-        return dataDaConsulta;
-    }
-
-    public void setDataDaConsulta(LocalDate dataDaConsulta) {
-        this.dataDaConsulta = dataDaConsulta;
-    }
-
-    public String getObservacoes() {
-        return observacoes;
-    }
-
-    public void setObservacoes(String observacoes) {
-        this.observacoes = observacoes;
     }
 }
