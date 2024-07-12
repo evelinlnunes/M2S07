@@ -1,7 +1,6 @@
 package com.semana7.semana7.entidades;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 
 @Entity
